@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StadiumGPT{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    {% block head %}{% endblock %}
+</head>
+<body class="font-md">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <a href="#" class="sidebar-brand">
+                <i class="fa-solid fa-circle-nodes"></i> Stadium<span>GPT</span>
+            </a>
+            
+            <ul class="sidebar-menu">
+                <li>
+                    <a href="#" class="menu-item-link active" data-target="panel-stadium-map">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        <span>Stadium Map</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-assistant">
+                        <i class="fa-solid fa-headset"></i>
+                        <span>AI Assistant</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-tournament">
+                        <i class="fa-solid fa-trophy"></i>
+                        <span>Tournament Deck</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-parking">
+                        <i class="fa-solid fa-square-p"></i>
+                        <span>Smart Parking</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-food">
+                        <i class="fa-solid fa-utensils"></i>
+                        <span>Food Court</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-sustainability">
+                        <i class="fa-solid fa-leaf"></i>
+                        <span>Sustainability</span>
+                    </a>
+                </li>
+
+                <!-- Role specific sidebar sections -->
+                {% if role in ['manager', 'admin', 'media'] %}
+                <li class="sidebar-divider my-2 border-bottom border-secondary opacity-25"></li>
+                <li class="small text-secondary fw-bold px-3 py-1">REPORTS</li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-analytics">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Operational BI</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if role in ['referee', 'admin'] %}
+                <li class="sidebar-divider my-2 border-bottom border-secondary opacity-25"></li>
+                <li class="small text-secondary fw-bold px-3 py-1">OFFICIATING</li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-referee">
+                        <i class="fa-solid fa-gavel"></i>
+                        <span>Match Command</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if role in ['security', 'medical', 'manager'] %}
+                <li class="sidebar-divider my-2 border-bottom border-secondary opacity-25"></li>
+                <li class="small text-secondary fw-bold px-3 py-1">COMMAND CENTER</li>
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-emergency">
+                        <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                        <span>Safety Command</span>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% if role in ['manager', 'admin'] %}
+                <li>
+                    <a href="#" class="menu-item-link" data-target="panel-audit-logs">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Audit Trail</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">{{ username[0]|upper }}</div>
+                <div class="user-info">
+                    <span class="user-name">{{ username }}</span>
+                    <span class="user-role-badge">{{ role }}</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Top Header Navbar -->
+            <header class="dashboard-header glass-card py-2 px-4 mb-4 border-0 rounded-4">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-secondary d-lg-none" id="sidebar-toggle" aria-label="Toggle Navigation menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h5 class="m-0 text-white"><i class="fa-regular fa-calendar-days text-primary me-2"></i> July 9, 2026</h5>
+                </div>
+                
+                <!-- Accessibility Controls & User Session actions -->
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <button id="contrast-toggle" class="btn btn-sm btn-outline-secondary" aria-label="Toggle High Contrast Mode" title="Toggle Contrast Mode">
+                            <i class="fa-solid fa-circle-half-stroke"></i>
+                        </button>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Text sizing">
+                            <button class="btn btn-outline-secondary font-size-btn" data-size="sm">A-</button>
+                            <button class="btn btn-outline-secondary font-size-btn active" data-size="md">A</button>
+                            <button class="btn btn-outline-secondary font-size-btn" data-size="lg">A+</button>
+                            <button class="btn btn-outline-secondary font-size-btn" data-size="xl">A++</button>
+                        </div>
+                    </div>
+                    
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger px-3" aria-label="Sign out of system">
+                        <i class="fa-solid fa-power-off me-2"></i>Sign Out
+                    </a>
+                </div>
+            </header>
+
+            <!-- Alerts bar for real-time operations notifications -->
+            <div id="global-alert-container"></div>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ChartJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Dynamic scripts persistence handlers -->
+    <script>
+        // Set environment globals
+        window.STADIUM_USER_ROLE = "{{ role }}";
+        window.STADIUM_USER_NAME = "{{ username }}";
+        window.API_TICK_URL = "{{ url_for('api_tick') }}";
+        window.API_ASSISTANT_URL = "{{ url_for('api_assistant') }}";
+        window.API_MATCH_EVENT_URL = "{{ url_for('add_match_event') }}";
+        window.API_INCIDENT_REPORT_URL = "{{ url_for('report_incident') }}";
+        window.API_INCIDENT_RESOLVE_URL = "{{ url_for('resolve_incident') }}";
+        window.API_PARKING_RECOMMEND_URL = "{{ url_for('recommend_parking') }}";
+        window.API_PARKING_RESERVE_URL = "{{ url_for('reserve_parking') }}";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Contrast setting sync
+            const contrastToggle = document.getElementById('contrast-toggle');
+            if (localStorage.getItem('highContrast') === 'true') {
+                document.body.classList.add('high-contrast');
+                contrastToggle.classList.add('btn-light');
+            }
+
+            contrastToggle.addEventListener('click', () => {
+                const isHigh = document.body.classList.toggle('high-contrast');
+                localStorage.setItem('highContrast', isHigh);
+                contrastToggle.classList.toggle('btn-light');
+            });
+
+            // Font Sizing controls
+            const fontButtons = document.querySelectorAll('.font-size-btn');
+            const savedSize = localStorage.getItem('fontSize') || 'md';
+            setFontSize(savedSize);
+
+            fontButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setFontSize(btn.getAttribute('data-size'));
+                });
+            });
+
+            function setFontSize(size) {
+                document.body.classList.remove('font-sm', 'font-md', 'font-lg', 'font-xl');
+                document.body.classList.add(`font-${size}`);
+                localStorage.setItem('fontSize', size);
+                fontButtons.forEach(btn => {
+                    if(btn.getAttribute('data-size') === size) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+            }
+
+            // Mobile Sidebar Toggle
+            const sideToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.querySelector('.app-sidebar');
+            if (sideToggle) {
+                sideToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                });
+            }
+        });
+    </script>
+
+    <!-- Project JavaScript Modules -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/assistant.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

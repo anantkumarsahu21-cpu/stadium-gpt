@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - StadiumGPT World Cup 2026</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Custom Style -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: radial-gradient(circle at 10% 20%, rgba(0, 223, 137, 0.08) 0%, rgba(11, 15, 25, 1) 90%);
+        }
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .preset-btn:hover {
+            background: rgba(0, 223, 137, 0.1);
+            border-color: var(--color-primary);
+            color: var(--text-primary);
+        }
+        .preset-btn i {
+            color: var(--color-secondary);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body class="font-md">
+    <div class="login-container">
+        <div class="w-100" style="max-width: 520px;">
+            <!-- Accessibility Widget -->
+            <div class="d-flex justify-content-end gap-2 mb-3">
+                <button id="contrast-toggle" class="btn btn-sm btn-outline-secondary" aria-label="Toggle High Contrast Mode" title="Toggle Contrast Mode">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                </button>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Font sizing controls">
+                    <button class="btn btn-outline-secondary font-size-btn" data-size="sm">A-</button>
+                    <button class="btn btn-outline-secondary font-size-btn active" data-size="md">A</button>
+                    <button class="btn btn-outline-secondary font-size-btn" data-size="lg">A+</button>
+                    <button class="btn btn-outline-secondary font-size-btn" data-size="xl">A++</button>
+                </div>
+            </div>
+
+            <!-- Login Card -->
+            <div class="glass-card shadow-lg">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-dark rounded-circle p-3 mb-2 border border-secondary pulsing-indicator">
+                        <i class="fa-solid fa-circle-nodes text-primary" style="font-size: 2.2rem; color: var(--color-primary) !important;"></i>
+                    </div>
+                    <h2>Stadium<span>GPT</span></h2>
+                    <p class="text-secondary small">GenAI Stadium Intelligence & Operations Platform</p>
+                </div>
+
+                {% if error %}
+                <div class="alert alert-danger border-0 bg-danger bg-opacity-15 text-danger py-2" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label text-secondary small">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-black border-secondary text-secondary"><i class="fa-solid fa-user"></i></span>
+                            <input type="text" class="form-control bg-dark border-secondary text-white" id="username" name="username" required placeholder="e.g., manager1">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-secondary small">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-black border-secondary text-secondary"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" class="form-control bg-dark border-secondary text-white" id="password" name="password" required placeholder="••••••••">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 border-0 fw-bold" style="background: var(--color-primary); color: #0b0f19;">
+                        Sign In <i class="fa-solid fa-right-to-bracket ms-2"></i>
+                    </button>
+                </form>
+
+                <hr class="my-4 border-secondary opacity-25">
+
+                <!-- Quick Presets -->
+                <div class="presets-section">
+                    <h6 class="text-secondary small fw-bold mb-3"><i class="fa-solid fa-user-gear me-1"></i> Quick Role Presets (Auto-fill)</h6>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="preset-btn" onclick="fillCredentials('fan1', 'fan')">
+                                <i class="fa-solid fa-user"></i>
+                                <span>Fan Profile</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="preset-btn" onclick="fillCredentials('referee1', 'referee')">
+                                <i class="fa-solid fa-shirt"></i>
+                                <span>Referee Deck</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="preset-btn" onclick="fillCredentials('security1', 'security')">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>Security Center</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="preset-btn" onclick="fillCredentials('medical1', 'medical')">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                                <span>Medical Command</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="preset-btn" onclick="fillCredentials('manager1', 'manager')">
+                                <i class="fa-solid fa-building-user"></i>
+                                <span>Stadium Manager</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="preset-btn" onclick="fillCredentials('admin1', 'admin')">
+                                <i class="fa-solid fa-sliders"></i>
+                                <span>Tournament Admin</span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="preset-btn" onclick="fillCredentials('media1', 'media')">
+                                <i class="fa-solid fa-newspaper"></i>
+                                <span>Media & Press Office</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts for UI & Accessibility Persistence -->
+    <script>
+        // Preset fill helper
+        function fillCredentials(user, pass) {
+            document.getElementById('username').value = user;
+            document.getElementById('password').value = pass;
+        }
+
+        // Accessibility Toggles
+        document.addEventListener('DOMContentLoaded', () => {
+            const contrastToggle = document.getElementById('contrast-toggle');
+            const fontButtons = document.querySelectorAll('.font-size-btn');
+
+            // Contrast Mode load/save
+            if (localStorage.getItem('highContrast') === 'true') {
+                document.body.classList.add('high-contrast');
+                contrastToggle.classList.add('btn-light');
+            }
+
+            contrastToggle.addEventListener('click', () => {
+                const isHigh = document.body.classList.toggle('high-contrast');
+                localStorage.setItem('highContrast', isHigh);
+                contrastToggle.classList.toggle('btn-light');
+            });
+
+            // Font sizing load/save
+            const savedSize = localStorage.getItem('fontSize') || 'md';
+            setFontSize(savedSize);
+
+            fontButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const size = btn.getAttribute('data-size');
+                    setFontSize(size);
+                });
+            });
+
+            function setFontSize(size) {
+                document.body.classList.remove('font-sm', 'font-md', 'font-lg', 'font-xl');
+                document.body.classList.add(`font-${size}`);
+                localStorage.setItem('fontSize', size);
+                
+                fontButtons.forEach(btn => {
+                    if(btn.getAttribute('data-size') === size) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
